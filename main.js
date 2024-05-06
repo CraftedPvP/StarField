@@ -15,12 +15,19 @@ const starCount = 500;
 
 // Load the star texture
 const textureLoader = new THREE.TextureLoader();
-const starTexture = textureLoader.load('textures/star.png');
+
+// dev note: These can silently fail. make sure you have the correct path or some kind of file checker
+const starTexture = textureLoader.load('textures/star.jpg');
+const starAlphaTexture = textureLoader.load('textures/star_alpha.jpg');
 
 // Create stars
 for(let i = 0; i < starCount; i++) {
     const geometry = new THREE.PlaneGeometry();
-    const material = new THREE.MeshBasicMaterial({map: starTexture, emissive: 0xFFFFFF});
+    const material = new THREE.MeshStandardMaterial({
+        map: starTexture,
+        emissiveMap: starAlphaTexture,
+        emissive: 0xFFFFFF
+    });
     const star = new THREE.Mesh(geometry, material);
 
     // Position the star randomly within a cube
@@ -42,7 +49,7 @@ document.addEventListener('wheel', onDocumentMouseWheel, false);
 function onDocumentMouseWheel(event) {
     // Move each star at a different speed
     for(let i = 0; i < stars.length; i++) {
-        stars[i].position.y += event.deltaY * 0.01 * (i % 5 + 1); // Change this line
+        stars[i].position.y += event.deltaY * 0.01 * (i % 5 + 1); 
     }
 }
 
@@ -60,4 +67,11 @@ function animate() {
     renderer.render(scene, camera);
 }
 
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+window.addEventListener('resize', onWindowResize);
 animate();
